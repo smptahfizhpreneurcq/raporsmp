@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Rapor SMP Tahfizhpreneur</title>
+<link rel="stylesheet" href="styles.css">
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="logo">ST</div>
+      <div><h1>SMP Tahfizhpreneur<br>Cahaya Qur'an</h1><p>Sistem Rapor PTS</p></div>
+    </div>
+    <div class="nav">
+      <button class="active" data-target="dashboard">⌂ Dashboard</button>
+      <button data-target="dataSection">▤ Data Nilai</button>
+      <button data-target="printSection">▣ Cetak Rapor</button>
+      <button data-target="settingsSection">⚙ Pengaturan</button>
+    </div>
+  </aside>
+  <main class="main">
+    <div class="topbar">
+      <div><h2>Rapor PTS SMP Tahfizhpreneur</h2><div class="muted">Upload Excel → validasi data → cetak rapor per siswa</div></div>
+      <div class="badge">2026/2027 • Semester Ganjil</div>
+    </div>
+
+    <section id="dashboard" class="section active">
+      <div class="grid">
+        <div class="card kpi"><div class="label">Total Siswa</div><div class="value" id="kStudents">0</div></div>
+        <div class="card kpi"><div class="label">Total Kelas</div><div class="value" id="kClasses">0</div></div>
+        <div class="card kpi"><div class="label">Sudah Ada Nilai</div><div class="value" id="kFilled">0</div></div>
+        <div class="card kpi"><div class="label">Belum Ada Nilai</div><div class="value" id="kIncomplete">0</div></div>
+      </div>
+      <div class="card">
+        <h3 style="margin-top:0">Mulai Pengolahan Rapor</h3>
+        <p class="muted">Gunakan template resmi agar data siswa dan nilai dapat dibaca otomatis.</p>
+        <div class="actions no-print">
+          <a class="btn primary" href="Template_Input_Rapor_PTS_SMP_Tahfizhpreneur.xlsx" download>↓ Download Template Excel</a>
+          <label class="btn">↑ Pilih File Excel<input id="excelFile" type="file" accept=".xlsx,.xls" hidden></label>
+          <button class="btn danger" onclick="resetData()">Hapus Data Browser</button>
+        </div>
+        <div id="drop" class="drop" style="margin-top:16px">
+          <b>Tarik file Excel ke sini</b>
+          <div class="muted" style="margin-top:5px">Data sementara disimpan pada browser perangkat ini.</div>
+          <div id="fileStatus" style="margin-top:12px;font-size:13px">Belum ada file</div>
+        </div>
+      </div>
+    </section>
+
+    <section id="dataSection" class="section">
+      <div class="card">
+        <h3 style="margin-top:0">Data Siswa & Kelengkapan Nilai</h3>
+        <div class="table-wrap">
+          <table><thead><tr><th>No.</th><th>Nama</th><th>Kelas</th><th>Jumlah Mapel</th><th>Rata-rata</th><th>Aksi</th></tr></thead><tbody id="studentBody"></tbody></table>
+        </div>
+      </div>
+    </section>
+
+    <section id="printSection" class="section">
+      <div class="card no-print">
+        <div class="actions">
+          <select id="studentSelect"><option value="">Pilih siswa...</option></select>
+          <button class="btn primary" onclick="printReport()">Cetak / Simpan PDF</button>
+          <button class="btn" onclick="printAll()">Cetak 1 Kelas</button>
+        </div>
+      </div>
+      <div class="report-shell" style="margin-top:14px"><div id="reportBox" class="muted">Pilih siswa untuk menampilkan rapor.</div></div>
+    </section>
+
+    <section id="settingsSection" class="section">
+      <div class="card">
+        <h3 style="margin-top:0">Konfigurasi Penyimpanan</h3>
+        <table>
+          <tr><td>Google Drive</td><td><b>sditcqdepok@gmail.com</b></td></tr>
+          <tr><td>Folder</td><td><b>Rapor SMP Tahfizhpreneur</b></td></tr>
+          <tr><td>Folder ID</td><td><code>1s388q6GJPxEKIstiouIFEcgIelC9hiEp</code></td></tr>
+          <tr><td>Status MVP</td><td>Web dapat membaca Excel dan mencetak rapor. Upload otomatis ke Drive memerlukan OAuth/backend.</td></tr>
+        </table>
+      </div>
+    </section>
+  </main>
+</div>
+<script src="app.js"></script>
+</body>
+</html>
