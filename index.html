@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Rapor SMP Tahfizhpreneur</title>
+<link rel="stylesheet" href="styles.css">
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="logo">ST</div>
+      <div><h1>SMP Tahfizhpreneur<br>Cahaya Qur'an</h1><p>Sistem Rapor PTS</p></div>
+    </div>
+    <div class="role-box">
+      <label>Mode / Role</label>
+      <select id="roleSelect">
+        <option value="admin">Admin / Operator</option>
+        <option value="mapel">Guru Mapel</option>
+        <option value="tahfizh">Guru Tahfizh</option>
+        <option value="ekskul">Guru Ekskul</option>
+        <option value="walas">Wali Kelas</option>
+      </select>
+    </div>
+    <nav class="nav">
+      <button class="active" data-target="dashboard">⌂ Dashboard</button>
+      <button data-target="masterSection" data-role="admin,walas">👥 Master Siswa</button>
+      <button data-target="mapelSection" data-role="admin,mapel">▤ Nilai Mapel</button>
+      <button data-target="tahfizhSection" data-role="admin,tahfizh">◈ Nilai Tahfizh</button>
+      <button data-target="ekskulSection" data-role="admin,ekskul">★ Ekskul</button>
+      <button data-target="walasSection" data-role="admin,walas">✓ Bagian Walas</button>
+      <button data-target="previewSection" data-role="admin,walas,mapel,tahfizh,ekskul">▣ Preview Rapor</button>
+    </nav>
+  </aside>
+
+  <main class="main">
+    <header class="topbar">
+      <div>
+        <h2>Rapor PTS SMP Tahfizhpreneur</h2>
+        <div class="muted">Satu master siswa → input per role → preview → cetak</div>
+      </div>
+      <div class="badge">2026/2027 • Ganjil</div>
+    </header>
+
+    <section id="dashboard" class="section active">
+      <div class="grid">
+        <div class="card kpi"><div class="label">Siswa</div><div class="value" id="kStudents">0</div></div>
+        <div class="card kpi"><div class="label">Kelas</div><div class="value" id="kClasses">0</div></div>
+        <div class="card kpi"><div class="label">Mapel Terisi</div><div class="value" id="kMapel">0</div></div>
+        <div class="card kpi"><div class="label">Rapor Siap</div><div class="value" id="kReady">0</div></div>
+      </div>
+      <div class="card">
+        <h3>Alur Pengisian</h3>
+        <div class="flow">
+          <div><b>1. Master Siswa</b><span>Diisi sekali oleh admin/walas</span></div>
+          <div><b>2. Guru Mapel</b><span>Pilih kelas + mapel, isi nilai</span></div>
+          <div><b>3. Guru Tahfizh</b><span>Nilai, hafalan, tajwid, murajaah</span></div>
+          <div><b>4. Guru Ekskul</b><span>Pilih ekskul, predikat, keterangan</span></div>
+          <div><b>5. Wali Kelas</b><span>Kedisiplinan, hadir, reward, pelanggaran, catatan</span></div>
+          <div><b>6. Preview</b><span>Cek dulu sebelum cetak/PDF</span></div>
+        </div>
+      </div>
+      <div class="card">
+        <h3>Import Master Data</h3>
+        <p class="muted">Kalau data siswa sudah ada, upload workbook database. Nama tidak perlu diketik ulang oleh guru.</p>
+        <div class="actions">
+          <a class="btn primary" href="Database_Rapor_SMP_Tahfizhpreneur.xlsx" download>↓ Download Format Database</a>
+          <label class="btn">↑ Upload Database<input id="dbFile" type="file" accept=".xlsx,.xls" hidden></label>
+          <button class="btn danger" onclick="clearAll()">Hapus Data Browser</button>
+        </div>
+        <div id="fileStatus" class="status">Belum ada database.</div>
+      </div>
+    </section>
+
+    <section id="masterSection" class="section">
+      <div class="card">
+        <div class="section-head"><div><h3>Master Siswa</h3><p class="muted">Sumber nama tunggal untuk semua guru.</p></div>
+        <button class="btn primary" onclick="addStudent()">+ Tambah Siswa</button></div>
+        <div class="filters">
+          <select id="masterClass" onchange="renderMaster()"><option value="">Semua kelas</option></select>
+        </div>
+        <div class="table-wrap"><table><thead><tr><th>No Urut</th><th>NISN</th><th>Nama</th><th>Kelas</th><th>Wali Kelas</th><th>Aksi</th></tr></thead><tbody id="masterBody"></tbody></table></div>
+      </div>
+    </section>
+
+    <section id="mapelSection" class="section">
+      <div class="card">
+        <h3>Input Nilai Mapel</h3>
+        <div class="filters">
+          <select id="mapelClass" onchange="renderMapelInput()"></select>
+          <select id="mapelName" onchange="renderMapelInput()"></select>
+        </div>
+        <div class="table-wrap"><table><thead><tr><th>No</th><th>Nama</th><th>Nilai</th><th>Deskripsi</th></tr></thead><tbody id="mapelBody"></tbody></table></div>
+        <div class="savebar"><button class="btn primary" onclick="saveMapel()">Simpan Nilai Mapel</button></div>
+      </div>
+    </section>
+
+    <section id="tahfizhSection" class="section">
+      <div class="card">
+        <h3>Input Nilai Tahfizh</h3>
+        <div class="filters"><select id="tahfizhClass" onchange="renderTahfizhInput()"></select></div>
+        <div class="table-wrap"><table><thead><tr><th>No</th><th>Nama</th><th>Nilai</th><th>Hafalan</th><th>Tajwid</th><th>Murajaah</th><th>Deskripsi</th></tr></thead><tbody id="tahfizhBody"></tbody></table></div>
+        <div class="savebar"><button class="btn primary" onclick="saveTahfizh()">Simpan Nilai Tahfizh</button></div>
+      </div>
+    </section>
+
+    <section id="ekskulSection" class="section">
+      <div class="card">
+        <h3>Input Ekstrakurikuler</h3>
+        <div class="filters">
+          <select id="ekskulClass" onchange="renderEkskulInput()"></select>
+          <input id="ekskulName" placeholder="Nama ekskul, contoh: Futsal" oninput="renderEkskulInput()">
+        </div>
+        <div class="table-wrap"><table><thead><tr><th>No</th><th>Nama</th><th>Ikut?</th><th>Predikat</th><th>Keterangan</th></tr></thead><tbody id="ekskulBody"></tbody></table></div>
+        <div class="savebar"><button class="btn primary" onclick="saveEkskul()">Simpan Ekskul</button></div>
+      </div>
+    </section>
+
+    <section id="walasSection" class="section">
+      <div class="card">
+        <h3>Input Wali Kelas</h3>
+        <div class="filters"><select id="walasClass" onchange="renderWalasInput()"></select></div>
+        <div class="table-wrap"><table><thead><tr><th>No</th><th>Nama</th><th>Kedisiplinan</th><th>Sakit</th><th>Izin</th><th>Alpa</th><th>Reward</th><th>Pelanggaran</th><th>Catatan Walas</th></tr></thead><tbody id="walasBody"></tbody></table></div>
+        <div class="savebar"><button class="btn primary" onclick="saveWalas()">Simpan Bagian Walas</button></div>
+      </div>
+    </section>
+
+    <section id="previewSection" class="section">
+      <div class="card no-print">
+        <h3>Preview Rapor</h3>
+        <div class="filters">
+          <select id="previewClass" onchange="refreshPreviewStudents()"></select>
+          <select id="previewStudent" onchange="renderPreview()"></select>
+          <button class="btn primary" onclick="printReport()">Cetak / Simpan PDF</button>
+        </div>
+        <div id="previewStatus" class="status"></div>
+      </div>
+      <div id="reportShell" class="report-shell"><div class="muted">Pilih siswa untuk preview.</div></div>
+    </section>
+  </main>
+</div>
+<script src="app.js"></script>
+</body>
+</html>
